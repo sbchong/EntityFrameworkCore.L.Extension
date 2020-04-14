@@ -1,10 +1,16 @@
-﻿using System;
+﻿using EntityFrameworkCore.L.Extension.Parameters;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Security.Cryptography.X509Certificates;
+using System.Threading.Tasks;
 
 namespace EntityFrameworkCore.L.Extension.Extension
 {
-    public class EntityFrameworkCoreExtension : IEntityFrameworkCoreExtension
+    public partial class EntityFrameworkCoreExtension<TDbContext, TEntity> : IEntityFrameworkCoreExtension<TDbContext, TEntity> where TDbContext : DbContext where TEntity : class
     {
         private readonly TDbContext _db;
         private IQueryable<TEntity> data;
@@ -15,44 +21,57 @@ namespace EntityFrameworkCore.L.Extension.Extension
 
         public IQueryProvider Provider => throw new NotImplementedException();
 
-        public EFCoreHelper(TDbContext db)
+        public EntityFrameworkCoreExtension(TDbContext db)
         {
             _db = db;
         }
-        public IEFCoreHelper<TDbContext, TEntity> GetResources()
-        {
-            data = _db.Set<TEntity>();
-            return this;
-        }
 
-        public IEFCoreHelper<TDbContext, TEntity> Where(Expression<Func<TEntity, bool>> where)
+
+        public IEntityFrameworkCoreExtension<TDbContext, TEntity> Where(Expression<Func<TEntity, bool>> query)
         {
-            data = data.Where(where);
+            data = data.Where(query);
             return this;
         }
-        public IEFCoreHelper<TDbContext, TEntity> OrderBy<TKey>(Expression<Func<TEntity, TKey>> orderBy)
+        public IEntityFrameworkCoreExtension<TDbContext, TEntity> OrderBy<TKey>(Expression<Func<TEntity, TKey>> orderBy)
         {
             data = data.OrderBy(orderBy);
             return this;
         }
-        public IEFCoreHelper<TDbContext, TEntity> Include<TProperty>(Expression<Func<TEntity, TProperty>> include)
+
+
+        public TEntity GetEntity<TKey>(TKey key)
         {
-            data = data.Include(include);
+            return _db.Set<TEntity>().Find(key);
+        }
+
+        public async Task<TEntity> GetEntityAsync<TKey>(TKey key)
+        {
+            return await _db.Set<TEntity>().FindAsync(key);
+        }
+        public IEntityFrameworkCoreExtension<TDbContext, TEntity> GetEntities()
+        {
+            data = _db.Set<TEntity>();
             return this;
         }
-        public IEFCoreHelper<TDbContext, TEntity> ThenInclude<TPreviousProperty, TProperty>(Expression<Func<TEntity, IEnumerable<TPreviousProperty>>> include, Expression<Func<TPreviousProperty, TProperty>> thenInclude)
+        public async Task<IEnumerable<TEntity>> GetEntitiesAsync()
         {
-            data = data.Include(include).ThenInclude(thenInclude);
-
-            return this;
+            return await _db.Set<TEntity>().ToListAsync();
         }
 
-        public async Task<IEnumerable<TEntity>> getResourceListByPage<TKey>(Expression<Func<TEntity, bool>> where, Expression<Func<TEntity, TKey>> orderBy, BlogParameters blogParameters)
+        public async Task<IEnumerable<TEntity>> GetEntitiesAsync(Expression<Func<TEntity, bool>> query)
         {
-            return await _db.Set<TEntity>().Where(where).OrderByDescending(orderBy).Skip(blogParameters.PageIndex * blogParameters.PageSize).Take(blogParameters.PageSize).ToListAsync();
+            return await _db.Set<TEntity>().Where(query).ToListAsync();
+        }
+        public async Task<IEnumerable<TEntity>> GetEntitiesAsync<TKey>(Expression<Func<TEntity, bool>> query, QueryParameter<TEntity,TKey> queryParameter)
+        {
+            return await _db.Set<TEntity>().Where(query).OrderByDescending(queryParameter.OrderBy).Skip(queryParameter.PageIndex * queryParameter.PageSize).Take(queryParameter.PageSize).ToListAsync();
+        }
+        public async Task<IEnumerable<TEntity>> GetEntitiesAsync<TKey>(Expression<Func<TEntity, bool>> query, Expression<Func<TEntity, TKey>> orderBy, int pageIndex, int pageSize)
+        {
+            return await _db.Set<TEntity>().Where(query).OrderByDescending(orderBy).Skip(pageIndex * pageSize).Take(pageSize).ToListAsync();
         }
 
-        public async Task<IEnumerable<TEntity>> GetResourceAsync<TProperty>(List<Expression<Func<TEntity, TProperty>>> expressions)
+        public async Task<IEnumerable<TEntity>> GetEntitiesAsync<TProperty>(List<Expression<Func<TEntity, TProperty>>> expressions)
         {
             var entity = _db.Set<TEntity>() as IQueryable<TEntity>;
 
@@ -63,10 +82,16 @@ namespace EntityFrameworkCore.L.Extension.Extension
 
             return await entity.ToListAsync();
         }
-
-        public IEnumerable<TEntity> GetResource()
+        public IEntityFrameworkCoreExtension<TDbContext, TEntity> Include<TProperty>(Expression<Func<TEntity, TProperty>> include)
         {
-            return _db.Set<TEntity>();
+            data = data.Include(include);
+            return this;
+        }
+        public IEntityFrameworkCoreExtension<TDbContext, TEntity> Include<TPreviousProperty, TProperty>(Expression<Func<TEntity, IEnumerable<TPreviousProperty>>> include, Expression<Func<TPreviousProperty, TProperty>> thenInclude)
+        {
+            data = data.Include(include).ThenInclude(thenInclude);
+
+            return this;
         }
 
         public async Task<IEnumerable<TEntity>> ToListAsync()
@@ -115,15 +140,21 @@ namespace EntityFrameworkCore.L.Extension.Extension
             }
             return entities;
         }
-
-        public IEnumerator<TEntity> GetEnumerator()
+        public TEntity Delete(Expression<Func<TEntity, bool>> query)
         {
-            throw new NotImplementedException();
+            var entity = _db.Set<TEntity>().Find(query);
+            if (!(entity is null))
+            {
+                _db.Entry<TEntity>(entity).State = EntityState.Deleted;
+            }
+            return entity;
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
+        public IEnumerator<TEntity> GetEnumerator() =>
             throw new NotImplementedException();
-        }
+
+        IEnumerator IEnumerable.GetEnumerator() =>
+            throw new NotImplementedException();
+
     }
 }
