@@ -1,0 +1,2 @@
+# EntityFrameworkCore.L.Extension
+EntityFrameworkCore泛型扩展，可直接替代大部分增删改查
