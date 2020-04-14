@@ -21,7 +21,7 @@ namespace EntityFrameworkCore.L.Extension.Extension
         Task<IEnumerable<TEntity>> GetEntitiesAsync();
         Task<IEnumerable<TEntity>> GetEntitiesAsync(Expression<Func<TEntity, bool>> query);
         Task<IEnumerable<TEntity>> GetEntitiesAsync<TProperty>(List<Expression<Func<TEntity, TProperty>>> expressions);
-        Task<IEnumerable<TEntity>> GetEntitiesAsync<TKey>(Expression<Func<TEntity, bool>> query,  QueryParameter<TEntity,TKey> queyParameter);
+        Task<IEnumerable<TEntity>> GetEntitiesAsync<TParameter,TKey>(Expression<Func<TEntity, bool>> query,  TParameter queryParameter) where TParameter : QueryParameter<TEntity, TKey>; 
         Task<IEnumerable<TEntity>> GetEntitiesAsync<TKey>(Expression<Func<TEntity, bool>> query, Expression<Func<TEntity, TKey>> orderBy, int pageIndex, int pageSize);
         IEntityFrameworkCoreExtension<TDbContext, TEntity> Include<TProperty>(Expression<Func<TEntity, TProperty>> include);
         IEntityFrameworkCoreExtension<TDbContext, TEntity> Include<TPreviousProperty, TProperty>(Expression<Func<TEntity, System.Collections.Generic.IEnumerable<TPreviousProperty>>> include, Expression<Func<TPreviousProperty, TProperty>> thenInclude);

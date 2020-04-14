@@ -62,7 +62,7 @@ namespace EntityFrameworkCore.L.Extension.Extension
         {
             return await _db.Set<TEntity>().Where(query).ToListAsync();
         }
-        public async Task<IEnumerable<TEntity>> GetEntitiesAsync<TKey>(Expression<Func<TEntity, bool>> query, QueryParameter<TEntity,TKey> queryParameter)
+        public async Task<IEnumerable<TEntity>> GetEntitiesAsync<TParameter, TKey>(Expression<Func<TEntity, bool>> query, TParameter queryParameter) where TParameter : QueryParameter<TEntity, TKey>
         {
             return await _db.Set<TEntity>().Where(query).OrderByDescending(queryParameter.OrderBy).Skip(queryParameter.PageIndex * queryParameter.PageSize).Take(queryParameter.PageSize).ToListAsync();
         }
