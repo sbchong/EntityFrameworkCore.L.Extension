@@ -1,5 +1,5 @@
 # EntityFrameworkCore.L.Extension
-|
+
 |    OS      |   status   |
 |------------|------------|
 |   Linux    |[![Build Status](https://dev.azure.com/Y-Y-Liu/EntityFrameworkCore.L.Extension/_apis/build/status/sbchong.EntityFrameworkCore.L.Extension?branchName=master)](https://dev.azure.com/Y-Y-Liu/EntityFrameworkCore.L.Extension/_build/latest?definitionId=3&branchName=master)|
