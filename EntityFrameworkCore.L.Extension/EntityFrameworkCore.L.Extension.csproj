@@ -3,9 +3,12 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <PackageId>EntityFrameworkCore.L.Extension</PackageId>
-    <Version>1.0.0</Version>
-    <Authors>CC Liu</Authors>
-    <Company>CC Liu</Company>
+    <Version>1.0.1</Version>
+    <Authors>sbchong</Authors>
+    <Company>GitHub</Company>
+    <PackageDescription>EntityFrameworkCore泛型扩展，可直接替代大部分增删改查!</PackageDescription>
+    <RepositoryUrl>https://github.com/sbchong/EntityFrameworkCore.L.Extension</RepositoryUrl>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>

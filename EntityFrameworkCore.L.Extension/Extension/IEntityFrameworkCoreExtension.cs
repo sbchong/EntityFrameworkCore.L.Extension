@@ -21,6 +21,7 @@ namespace EntityFrameworkCore.L.Extension.Extension
         Task<IEnumerable<TEntity>> GetEntitiesAsync();
         Task<IEnumerable<TEntity>> GetEntitiesAsync(Expression<Func<TEntity, bool>> query);
         Task<IEnumerable<TEntity>> GetEntitiesAsync<TProperty>(List<Expression<Func<TEntity, TProperty>>> expressions);
+        Task<IEnumerable<TResult>> GetEntitiesAsync<TResult, TParameter, TKey>(Expression<Func<TEntity, bool>> query, Expression<Func<TEntity, TResult>> selectEntity, TParameter queryParameter) where TParameter : QueryParameter<TEntity, TKey>;
         Task<IEnumerable<TEntity>> GetEntitiesAsync<TParameter,TKey>(Expression<Func<TEntity, bool>> query,  TParameter queryParameter) where TParameter : QueryParameter<TEntity, TKey>; 
         Task<IEnumerable<TEntity>> GetEntitiesAsync<TKey>(Expression<Func<TEntity, bool>> query, Expression<Func<TEntity, TKey>> orderBy, int pageIndex, int pageSize);
         IEntityFrameworkCoreExtension<TDbContext, TEntity> Include<TProperty>(Expression<Func<TEntity, TProperty>> include);
@@ -30,5 +31,6 @@ namespace EntityFrameworkCore.L.Extension.Extension
         IEntityFrameworkCoreExtension<TDbContext, TEntity> OrderBy<TKey>(Expression<Func<TEntity, TKey>> orderBy);
         Task<IEnumerable<TEntity>> ToListAsync();
         IEntityFrameworkCoreExtension<TDbContext, TEntity> Where(Expression<Func<TEntity, bool>> query);
+       
     }
 }
